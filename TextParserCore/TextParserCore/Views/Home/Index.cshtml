@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var parsedText = '@ViewBag.ParsedText';
+        var mode = '@ViewBag.Mode';
+        
+        $("#divXML").hide();
+        $("#divCSV").hide();
+        $("#btnConvertToCSV").hide();
+        $("#btnConvertToXML").hide();
+        if (mode != null && mode != '' && parsedText != null && parsedText != '') {
+            if (mode == "xml") {
+                $("#txtResultXML").html(parsedText);
+                $("#drpConversionOption").val(mode);
+            }
+            else if (mode == "csv") {
+
+                $("#txtResultCSV").html(parsedText);
+                $("#drpConversionOption").val(mode);
+            }
+        }
+
+        $("select").change(function () {
+            $(this).find("option:selected").each(function () {
+                var optionValue = $(this).attr("value");
+                if (optionValue == "xml") {
+                    $(".box").not("." + optionValue).hide();
+                    $("#divXML").show();
+                    $("#divCSV").hide();
+                    $("#btnConvertToCSV").hide();
+                    $("#btnConvertToXML").show();
+                } else if (optionValue == "csv") {
+                    $("#divXML").hide();
+                    $("#divCSV").show();
+                    $("#btnConvertToCSV").show();
+                    $("#btnConvertToXML").hide();
+                    $("#txtResultXML").val("");
+                }
+                else {
+                    $("#divXML").hide();
+                    $("#divCSV").hide();
+                    $("#btnConvertToCSV").hide();
+                    $("#btnConvertToXML").hide();
+                    $("#txtResultXML").val("");
+                    $("#txtResultCSV").val("");
+                }
+            });
+        }).change();
+
+        $("#btnConvertToXML").click(function () {
+            if ($("#txtResultXML").val() != "") {
+                $("#txtResultXML").val("");
+            }
+        });
+    });
+</script>
+@using (Html.BeginForm(FormMethod.Post, new { style = "background-color: aliceblue; height: auto; width: 100%" }))
+{
+<div style="padding: 20px">
+    @Html.DropDownList("drpConversionOption", new List<SelectListItem>
+    {
+         new SelectListItem{ Text="Select a option", Value = "" },
+         new SelectListItem{ Text="Convert to Xml", Value = "xml" },
+         new SelectListItem{ Text="Convert to CSV", Value = "csv" },
+    })
+
+    <input type="submit" name="btnConvertToXML" id="btnConvertToXML" value="Convert to XML" formaction="@Url.Action("ConvertToXML")" formmethod="post" />
+    <input type="submit" name="btnConvertToCSV" id="btnConvertToCSV" value="Convert to CSV" formaction="@Url.Action("ConvertToCSV")" formmethod="post"/>
+    @*<input type="submit" value="Convert to CSV" formmethod="@Url.Action("abcd","Home")" />*@
+    @* <input type="submit" name="response" value="Decline" formaction=@Url.Action("abcd") formmethod="post" class="btn btn-default" />*@
+</div>
+    <div>
+        <div style="padding: 20px">
+            <div style="padding-bottom: 5px">
+                @Html.Label(String.Empty, "Enter your text to be parsed", null)
+            </div>
+            @Html.TextArea("txtInputText", String.Empty, 10, 15, new { style = "height:31%;width:62%;border:solid" })
+        </div>
+        <div style="padding-left: 20px" id="divXML">
+            <div style="padding-bottom: 5px">
+                @Html.Label("lblResultXML", "XML view of prased Text", null)
+            </div>
+            @Html.TextArea("txtResultXML", String.Empty, 25, 20, new { style = "height:50%;width:62%;border:solid" })
+        </div>
+        <div style="padding-left: 20px" id="divCSV">
+            <div style="padding-bottom: 5px">
+                <asp:label id="lblResultCSV" runat="server" text="CSV view of prased Text"></asp:label>
+                @Html.Label("lblResultCSV", "CSV view of prased Text", null)
+            </div>
+            @Html.TextArea("txtResultCSV", String.Empty, 20, 25, new { style = "height:40%;width:63%;border:solid" })
+        </div>
+
+    </div>
+
+}
+
+
